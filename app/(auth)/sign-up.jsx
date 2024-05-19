@@ -19,9 +19,9 @@ const SignUp = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  /*const submitForm = () => {
+  const submitForm = () => {
     signUpUser()
-  }*/
+  }
 
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -40,12 +40,12 @@ const SignUp = () => {
               value={form.username}
               inputStyle="mt-8"
               changeFormFn={(e) =>
-                setForm((prevState) => ({ ...prevState, email: e }))
+                setForm((prevState) => ({ ...prevState, username: e }))
               }
               placeholder="Ex: Cristooo"
             />
             <InputField
-              name="Nome de usuario"
+              name="Email"
               value={form.email}
               keyboardType="email-address"
               inputStyle="mt-8"
@@ -63,7 +63,7 @@ const SignUp = () => {
                 setForm((prevState) => ({ ...prevState, password: e }))
               }
             />
-            <CustomButton title="Entrar" styles="mt-12 p-5" isLoading={isSubmitting} />
+            <CustomButton title="Entrar" styles="mt-12 p-5" isLoading={isSubmitting} goToFn={submitForm}  />
             <View className="mt-4">
               <Text className="text-lg text-gray-100 text-center">
                 {" "}
