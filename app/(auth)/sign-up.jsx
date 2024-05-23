@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { View, Text, ScrollView, Image } from 'react-native'
+import { View, Text, ScrollView, Image, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from "expo-status-bar"
 import InputField from '../../components/InputField';
 
 import { images } from "../../constants"
 import CustomButton from '../../components/CustomButton';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { signUpUser } from '../../lib/appwrite';
 
 const SignUp = () => {
@@ -20,7 +20,23 @@ const SignUp = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const submitForm = () => {
-    signUpUser()
+    if(!form.username || !form.email || !form.password){
+      Alert.alert("Erro", "Por favor, preenche todos os campos!")
+    }
+
+    setIsSubmitting(true)
+
+    signUpUser(form.username, form.email, form.password)
+    .then((response) => {
+
+      router.replace("/home")
+    })
+    .catch(err => {
+      Alert.alert("Error", err.message)
+    })
+    .finally(() => {
+      setIsSubmitting(false)
+    })
   }
 
   return (
