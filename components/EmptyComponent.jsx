@@ -15,7 +15,7 @@ const EmptyComponent = ({ title, subtitle }) => {
       <Text className="text-xl font-bold text-white"> {title} </Text>
 
       <CustomButton 
-        title="Cria um vídeo"
+        title="Crie um vídeo"
         goToFn={() => router.push("/create")}
         styles="my-5 py-4 px-2"
       />

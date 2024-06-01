@@ -1,26 +1,35 @@
-import { useState } from 'react'
-import { View, Text, FlatList, Image, RefreshControl } from 'react-native'
+import { useEffect, useState } from 'react'
+import { View, Text, FlatList, Image, RefreshControl, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import EmptyComponent from '../../components/EmptyComponent'
 import SearchBar from '../../components/SearchBar'
 import TrendingVideos from '../../components/TrendingVideos'
 import images from '../../constants/images'
+import { getAllPosts, getLatestPosts } from '../../lib/appwrite'
+import useAppwrite from '../../lib/useAppwrite'
+import VideoCard from '../../components/VideoCard'
 
 const Home = () => {
+
+  const {data: allPosts, isLoading, refresh } = useAppwrite(getAllPosts)
 
   const [isRefresh, setIsRefresh] = useState(false)
 
   const onRefresh = async () => {
     setIsRefresh(true)
     // fetch videos
+    await refresh()
     setIsRefresh(false)
   }
+
 
   return (
     <SafeAreaView className="bg-primary h-full w-full">
       <FlatList 
-        data={[]}
-        renderItem={() => {}}
+        data={allPosts}
+        renderItem={({ item }) => (
+          <VideoCard video={item} />
+        )}
         ListHeaderComponent={() => <HeaderComponent username="Cristooo" />}
         ListEmptyComponent={() => <EmptyComponent title="Nenhum vídeo encontrado" subtitle="Seja o primeiro a carregar um vídeo" />}
         refreshControl={<RefreshControl refreshing={isRefresh} onRefresh={onRefresh} />}
@@ -33,6 +42,8 @@ export default Home
 
 
 const HeaderComponent = ({username}) => {
+
+  const {data: latestPosts} = useAppwrite(getLatestPosts)
 
   return (
     <View className="my-6 px-4 space-y-6">
@@ -51,7 +62,7 @@ const HeaderComponent = ({username}) => {
       <View>
         <Text className="text-white">Últimos vídeos</Text>
         <TrendingVideos 
-          posts={[{id: 1}, {id: 2}, { id: 3}] ?? []}
+          posts={latestPosts || []}
         />
       </View>
     </View>
