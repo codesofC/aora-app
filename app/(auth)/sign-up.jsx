@@ -1,43 +1,47 @@
-import { useState } from 'react'
-import { View, Text, ScrollView, Image, Alert } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from "expo-status-bar"
-import InputField from '../../components/InputField';
+import { useState } from "react";
+import { View, Text, ScrollView, Image, Alert } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
+import InputField from "../../components/InputField";
 
-import { images } from "../../constants"
-import CustomButton from '../../components/CustomButton';
-import { Link, router } from 'expo-router';
-import { signUpUser } from '../../lib/appwrite';
+import { images } from "../../constants";
+import CustomButton from "../../components/CustomButton";
+import { Link, router } from "expo-router";
+import { getCurrentUser, signUpUser } from "../../lib/appwrite";
+import { useGlobalContext } from "../../context/GlobalContext";
 
 const SignUp = () => {
-
   const [form, setForm] = useState({
-    username: '',
-    email: '',
-    password: ''
-  })
+    username: "",
+    email: "",
+    password: "",
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const submitForm = () => {
-    if(!form.username || !form.email || !form.password){
-      Alert.alert("Erro", "Por favor, preenche todos os campos!")
+  const { setUser, setIsConnected } = useGlobalContext();
+
+  const submitForm = async () => {
+    if (!form.username || !form.email || !form.password) {
+      Alert.alert("Erro", "Por favor, preenche todos os campos!");
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
-    signUpUser(form.username, form.email, form.password)
-    .then((response) => {
-
-      router.replace("/home")
-    })
-    .catch(err => {
-      Alert.alert("Error", err.message)
-    })
-    .finally(() => {
-      setIsSubmitting(false)
-    })
-  }
+    await signUpUser(form.username, form.email, form.password)
+      .then(async () => {
+        const user = await getCurrentUser()
+        setIsConnected(true)
+        setUser(user)
+        router.replace("/home")
+      })
+      .catch((err) => {
+        Alert.alert("Error", err.message);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
+  };
 
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -79,7 +83,12 @@ const SignUp = () => {
                 setForm((prevState) => ({ ...prevState, password: e }))
               }
             />
-            <CustomButton title="Entrar" styles="mt-12 p-5" isLoading={isSubmitting} goToFn={submitForm}  />
+            <CustomButton
+              title="Entrar"
+              styles="mt-12 p-5"
+              isLoading={isSubmitting}
+              goToFn={submitForm}
+            />
             <View className="mt-4">
               <Text className="text-lg text-gray-100 text-center">
                 {" "}
@@ -95,6 +104,6 @@ const SignUp = () => {
       <StatusBar style="light" backgroundColor="#161622" />
     </SafeAreaView>
   );
-}
+};
 
-export default SignUp
+export default SignUp;

@@ -7,7 +7,8 @@ import InputField from "../../components/InputField";
 import { useState } from "react";
 import CustomButton from "../../components/CustomButton";
 import { Link, router } from "expo-router";
-import { signIn } from "../../lib/appwrite";
+import { getCurrentUser, signIn } from "../../lib/appwrite";
+import { useGlobalContext } from "../../context/GlobalContext";
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -15,27 +16,31 @@ const Login = () => {
     password: "",
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const submitForm = () => {
-    if(!form.email || !form.password){
-      Alert.alert("Erro", "Por favor, preenche todos os campos!")
+  const { setUser, setIsConnected } = useGlobalContext();
+
+  const submitForm = async () => {
+    if (!form.email || !form.password) {
+      return Alert.alert("Erro", "Por favor, preenche todos os campos!");
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
-    signIn(form.email, form.password)
-    .then((response) => {
-
-      router.replace("/home")
-    })
-    .catch(err => {
-      Alert.alert("Error", err.message)
-    })
-    .finally(() => {
-      setIsSubmitting(false)
-    })
-  }
+    await signIn(form.email, form.password)
+      .then(async () => {
+        const user = await getCurrentUser();
+        setIsConnected(true);
+        setUser(user);
+        router.replace("/home");
+      })
+      .catch((err) => {
+        Alert.alert("Error", err.message);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
+  };
 
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -68,7 +73,12 @@ const Login = () => {
                 setForm((prevState) => ({ ...prevState, password: e }))
               }
             />
-            <CustomButton title="Entrar" styles="mt-12 p-5" isLoading={isSubmitting} goToFn={submitForm} />
+            <CustomButton
+              title="Entrar"
+              styles="mt-12 p-5"
+              isLoading={isSubmitting}
+              goToFn={submitForm}
+            />
             <View className="mt-4">
               <Text className="text-lg text-gray-100 text-center">
                 {" "}
