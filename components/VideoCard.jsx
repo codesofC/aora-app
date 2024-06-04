@@ -38,8 +38,14 @@ const VideoCard = ({
             </Text>
           </View>
         </View>
-        <View className="pt-2">
+        <View className="relative pt-2">
           <Image source={icons.menu} className="w-5 h-5" resizeMode="contain" />
+          <View>
+            <View className="absolute -bottom-4 -right-2 border bg-primary">
+              <Image source={icons.bookmark} className="w-3 h-4" resizeMode="contain" />
+              <Text> Salvar </Text>
+            </View>
+          </View>
         </View>
       </View>
 
