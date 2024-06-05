@@ -1,17 +1,34 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
 import icons from "../constants/icons";
 import { useState } from "react";
 import { ResizeMode, Video } from "expo-av";
+import { SavedVideo } from "../lib/appwrite";
+import { useGlobalContext } from "../context/GlobalContext";
 
 const VideoCard = ({
   video: {
     title,
     thumbnail,
     video,
-    creator: { username, avatar },
+    creator: { username, avatar, $id },
   },
+  id
 }) => {
   const [play, setPlay] = useState(false);
+
+  const { user } = useGlobalContext()
+
+  // const updateTheData = async () => {
+  //   const result = await SavedVideo(id, {
+  //     saved: (prevData) => ([...prevData, user.$id])
+  //   })
+  //   .then(() => {
+  //     return Alert.alert("Success", "Foi")
+  //   })
+  //   .catch(error => {
+  //     return Alert.alert("Error", error.message + " " + id)
+  //   })
+  // }
 
   return (
     <View className="w-full mb-14 px-4 gap-4">
@@ -40,11 +57,18 @@ const VideoCard = ({
         </View>
         <View className="relative pt-2">
           <Image source={icons.menu} className="w-5 h-5" resizeMode="contain" />
-          <View>
-            <View className="absolute -bottom-4 -right-2 border bg-primary">
+          <View className="absolute -bottom-20 right-0 border border-gray-400 bg-primary p-4 space-y-4 w-28 rounded-md z-10">
+            <TouchableOpacity 
+              onPress={updateTheData}
+              className="flex-row items-center space-x-1"
+            >
               <Image source={icons.bookmark} className="w-3 h-4" resizeMode="contain" />
-              <Text> Salvar </Text>
-            </View>
+              <Text className="text-white"> Salvar </Text>
+            </TouchableOpacity>
+            <TouchableOpacity className="flex-row items-center space-x-1">
+              <Image source={icons.bookmark} className="w-3 h-4" resizeMode="contain" />
+              <Text className="text-white"> Apaguar </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
