@@ -31,7 +31,7 @@ const Home = () => {
       <FlatList 
         data={allPosts}
         renderItem={({ item }) => (
-          <VideoCard video={item} id={item.$id} />
+          <VideoCard video={item} />
         )}
         keyExtractor={(item) => item.$id}
         ListHeaderComponent={() => <HeaderComponent username={user.username} />}
